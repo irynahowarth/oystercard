@@ -22,4 +22,19 @@ describe Oystercard do
     expect(subject.balance).to eq 10
   end
 
+  it "when initialize #in_jorney? is return false" do
+    expect(subject.in_jorney?).to eq false
+  end
+
+  it "should change the #in_jorney? for true if #touch_in" do
+    subject.touch_in
+    expect(subject.in_jorney?).to eq true
+  end
+
+  it "should change the #in_jorney? for false if #touch_out" do
+    subject.touch_in
+    subject.touch_out
+    expect(subject.in_jorney?).to eq false
+  end
+
 end
