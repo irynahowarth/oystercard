@@ -3,7 +3,10 @@ require 'oystercard'
 describe Oystercard do
 
   subject(:oystercard){ described_class.new }
-  let(:station){double :station}
+  let(:start_journey){double :start_journey}
+  let(:end_journey){double :end_journey}
+  let(:journey){ {start_journey: start_journey, end_journey: end_journey} }
+
 
   describe "#initialize" do
 
@@ -11,8 +14,12 @@ describe Oystercard do
       expect(subject.balance).to eq 0
     end
 
-    it "should #in_jorney? return false" do
-      expect(subject.in_jorney?).to eq false
+    it "should #in_journey? return false" do
+      expect(subject.in_journey?).to eq false
+    end
+
+    it "should have an empty array as journey_list" do
+      expect(subject.journey_list).to match_array []
     end
 
   end
@@ -38,21 +45,21 @@ describe Oystercard do
 
     before(:each) do
       subject.top_up Oystercard::MIN_LIMIT
-      subject.touch_in(station)
+      subject.touch_in(journey[start_journey])
     end
 
 
     it "should change the #in_jorney? for true" do
-      expect(subject.in_jorney?).to eq true
+      expect(subject.in_journey?).to eq true
     end
 
     it "shoud raise error when balance is less then #{Oystercard::MIN_LIMIT}" do
-      subject.touch_out
-      expect{subject.touch_in(station)}.to raise_error "Not enough money!"
+      subject.touch_out journey[end_journey]
+      expect{subject.touch_in(journey[start_journey])}.to raise_error "Not enough money!"
     end
 
     it "should remember the entry station" do
-      expect(subject.entry_station).to eq station
+      expect(subject.journey_list.last[:start_journey]).to eq journey[start_journey]
     end
   end
 
@@ -60,15 +67,20 @@ describe Oystercard do
 
     before(:each) do
       subject.top_up Oystercard::MIN_LIMIT
-      subject.touch_in(station)
-    end
-
-    it "should change the #in_jorney? for false" do
-      expect{subject.touch_out}.to change{subject.in_jorney?}.to false
+      subject.touch_in(journey[start_journey])
     end
 
     it "should deduct fare amount from card" do
-      expect{subject.touch_out}.to change{subject.balance}.by -Oystercard::MIN_LIMIT
+      expect{subject.touch_out(journey[end_journey])}.to change{subject.balance}.by -Oystercard::MIN_LIMIT
+    end
+
+    it "should change the #in_jorney? for false" do
+      expect{subject.touch_out(journey[end_journey])}.to change{subject.in_journey?}.to false
+    end
+
+    it "should remember the exit station" do
+      subject.touch_out(journey[end_journey])
+      expect(subject.journey_list.last[:end_journey]).to eq journey[end_journey]
     end
 
   end
