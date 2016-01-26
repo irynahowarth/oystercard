@@ -47,14 +47,20 @@ describe Oystercard do
 
   describe "#touch_in" do
     it "should change the #in_jorney? for true" do
+      subject.top_up Oystercard::MIN_LIMIT
       subject.touch_in
       expect(subject.in_jorney?).to eq true
+    end
+
+    it "shoud raise error when balance is less then #{Oystercard::MIN_LIMIT}" do
+      expect{subject.touch_in}.to raise_error "Not enough money!"
     end
   end
 
    describe "#touch_out" do
 
     it "should change the #in_jorney? for false" do
+      subject.top_up Oystercard::MIN_LIMIT
       subject.touch_in
       subject.touch_out
       expect(subject.in_jorney?).to eq false
