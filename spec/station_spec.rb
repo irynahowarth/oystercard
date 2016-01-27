@@ -10,4 +10,5 @@ describe Station do
       expect(subject.zone).to eq 4
     end
   end
+  
 end

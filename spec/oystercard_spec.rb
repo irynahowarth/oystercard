@@ -14,11 +14,11 @@ describe Oystercard do
       expect(subject.balance).to eq 0
     end
 
-    it "should #in_journey? return false" do
+    xit "should #in_journey? return false" do
       expect(subject.in_journey?).to eq false
     end
 
-    it "should have an empty array as journey_list" do
+    xit "should have an empty array as journey_list" do
       expect(subject.journey_list).to match_array []
     end
 
@@ -70,9 +70,9 @@ describe Oystercard do
       subject.touch_in(journey[start_journey])
     end
 
-    it "should deduct fare amount from card" do
-      expect{subject.touch_out(journey[end_journey])}.to change{subject.balance}.by -Oystercard::MIN_LIMIT
-    end
+    #it "should deduct fare amount from card" do
+      #expect{subject.touch_out(journey[end_journey])}.to change{subject.balance}.by -Oystercard::MIN_LIMIT
+    #end
 
     xit "should change the #in_journey? for false" do
       subject.touch_out(journey[end_journey])
@@ -84,6 +84,14 @@ describe Oystercard do
       expect(subject.journey_list.last[:end_st]).to eq journey[end_journey]
     end
 
+  it "should charge penalty fare if you touch in twice in a row"do
+    expect{subject.touch_in "start"}.to change{subject.balance}.by -Journey::PENALTY_FARE
   end
+
+  end
+  it "should charge a penalty fare if you touch out without touching in"do
+    subject.top_up 50
+    expect{subject.touch_out "end"}.to change{subject.balance}.by -Journey::PENALTY_FARE
+end
 
 end

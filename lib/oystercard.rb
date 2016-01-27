@@ -25,14 +25,30 @@ class Oystercard
 
   def touch_in  station
     fail "Not enough money!" if balance < MIN_LIMIT
+    if !@journey_list.empty?
+      unless @journey_list.last.complete?
+        p "Naughty! You have to pay a penalty fare!"
+        deduct Journey::PENALTY_FARE
+      end
+    end
+    #charge if last journey wasn't complete
     journey = Journey.new
     journey[:start_st] = station
     @journey_list << journey
   end
 
   def touch_out station
-    deduct MIN_LIMIT
-    @journey_list.last[:end_st] = station
+    if @journey_list.empty? || @journey_list.last.complete?
+      p "NAUGHTY! You have to pay a penalty fare!!"
+      deduct Journey::PENALTY_FARE
+      journey = Journey.new
+      journey[:end_st]= station
+      journey[:start_st]= "penalty paid"
+      @journey_list << journey
+    else
+      @journey_list.last[:end_st] = station
+      deduct @journey_list.last.fare
+    end
   end
 
   private
