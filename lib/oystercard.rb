@@ -1,3 +1,4 @@
+require_relative 'journey'
 class Oystercard
 
   attr_reader :balance,
@@ -19,18 +20,19 @@ class Oystercard
 
   def in_journey?
     return false if @journey_list.empty?
-    return false if journey_list.last.has_key?(:end_journey)
-    !!@journey_list
+    !@journey_list.last.complete?
   end
 
   def touch_in  station
     fail "Not enough money!" if balance < MIN_LIMIT
-    @journey_list << {start_journey: station}
+    journey = Journey.new
+    journey[:start_st] = station
+    @journey_list << journey
   end
 
   def touch_out station
     deduct MIN_LIMIT
-    @journey_list.last[:end_journey] = station
+    @journey_list.last[:end_st] = station
   end
 
   private
