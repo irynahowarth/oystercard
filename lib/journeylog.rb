@@ -13,7 +13,9 @@ class JourneyLog
     @one_journey = @journey_klass.new station
   end
 
-  def exit_journey
+  def exit_journey station
+    self.current_journey[:end_st] = station
+    journeys << @one_journey if @one_journey.complete?
   end
 
   def current_journey

@@ -35,7 +35,23 @@ describe JourneyLog do
     end
   end
 
-  it "#exit_journey ends a current journey" do
-    expect(subject).to respond_to(:exit_journey)
+  describe "#exit_journey" do
+    it "#exit_journey ends a current journey" do
+      expect(subject).to respond_to(:exit_journey)
+    end
+    it "add to current journey ending station" do
+      subject.start_journey('start')
+      subject.exit_journey('end')
+      expect(subject.one_journey.end_st).to eq 'end'
+    end
+
+  end
+
+  describe "#journeys" do
+    it "return a list of all previous journeys" do
+      subject.start_journey('start')
+      subject.exit_journey('end')
+      expect(subject.journeys).to include(subject.one_journey)
+    end
   end
 end
